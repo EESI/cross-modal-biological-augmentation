@@ -1,0 +1,11 @@
+torchmetrics
+lion_pytorch
+git+https://github.com/huggingface/transformers
+accelerate
+qwen-vl-utils[decord]==0.0.8
+Pillow
+git+https://github.com/huggingface/diffusers
+safetensors
+google-genai
+torch
+torchvision
