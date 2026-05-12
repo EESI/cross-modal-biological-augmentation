@@ -135,7 +135,7 @@ This script generates photorealistic environmental images based on metadata prom
 
 ## Project Links
 
-- GitHub: https://github.com/EESI/cross-modal-bio-augmentation
+- GitHub: https://github.com/EESI/cross-modal-biological-augmentation
 - HuggingFace: coming soon
 
 
