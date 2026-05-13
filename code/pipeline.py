@@ -1296,7 +1296,7 @@ def run_empo500(empo_cfg):
         mlp_probs = pipeline.predict_proba(X_test_tab)
 
         if mlp_probs.shape[1] != num_classes_local:
-            raise ValueError(f"[EMPO3] MLP probs dim {mlp_probs.shape[1]} != num_classes {num_classes_local}")
+            raise ValueError(f"[EMPO500] MLP probs dim {mlp_probs.shape[1]} != num_classes {num_classes_local}")
 
         w_fusion, w_mlp = empo_cfg.get("ensemble_weights", (0.7, 0.3))
         ensemble_probs = w_fusion * fusion_probs + w_mlp * mlp_probs
