@@ -1,5 +1,5 @@
 from config import CFG
-from bidirectional_pipeline import run_ehr, run_empo500
+from pipeline import run_ehr, run_empo500
 
 # ======================================================================
 # MAIN
