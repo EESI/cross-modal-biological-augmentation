@@ -60,7 +60,7 @@ All hyperparameters, file paths, and model settings are defined in `config.py`.
 Before running the code, please ensure the `base_dir` in `config.py` points to the directory containing your dataset.
 
   * **EHR Task:** Configure paths under `CFG["ehr"]`
-  * **EMPO3 Task:** Configure paths under `CFG["empo3"]`
+  * **EMPO500 Task:** Configure paths under `CFG["empo3"]`
 
 ### 2\. Running the Code
 
@@ -95,7 +95,7 @@ Please organize your data directory as expected by the `config.py`.
   * Expects `splits/` directory containing `train.csv`, `val.csv`, `test.csv`.
   * Expects `ehrs/` directory containing NDJSON files (e.g., `qwen_ehr_outputs_*.ndjson`).
 
-**For EMPO3 Task:**
+**For EMPO500 Task:**
 
   * Expects `images_qwen/` directory.
   * Expects metadata CSV files (e.g., `meta_train_envfeature.csv`, `meta_val_envfeature.csv`, `meta_test_envfeature.csv`) in the base directory.
