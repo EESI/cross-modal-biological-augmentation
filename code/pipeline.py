@@ -1,5 +1,5 @@
 # ==================================================
-# Unified script: EHR (HAM10000) + EMPO3 + MLP Ensemble
+# Unified script: EHR (HAM10000) + EMPO500 + MLP Ensemble
 #   - CFG["mode"] = "ehr" / "empo500" / "both"
 # ==================================================
 
@@ -920,19 +920,19 @@ def run_ehr(ehr_cfg):
 
 
 # ======================================================================
-# 2) EMPO3 pipeline (fusion + optional MLP ensemble)
+# 2) EMPO500 pipeline (fusion + optional MLP ensemble)
 # ======================================================================
 
-def run_empo3(empo_cfg):
+def run_empo500(empo_cfg):
     print("=" * 60)
-    print("EMPO3 pipeline")
+    print("EMPO500 pipeline")
     print("=" * 60)
     set_seed(empo_cfg.get("seed", 42))
 
-    # EMPO3 calibration error message
+    # EMPO500 calibration error message
     if empo_cfg.get("use_bias_calibration", False):
-        print("[EMPO3] use_bias_calibration=True but, "
-              "tau/bias calibration is only for EHR pipeline. (not applicable for EMPO3 now)")
+        print("[EMPO500] use_bias_calibration=True but, "
+              "tau/bias calibration is only for EHR pipeline. (not applicable for EMPO500 now)")
 
     base_dir = empo_cfg["base_dir"]
     img_root = os.path.join(base_dir, "images_qwen")
@@ -963,12 +963,12 @@ def run_empo3(empo_cfg):
         for sp in splits:
             splits[sp][col] = le.transform(splits[sp][col].astype(str))
     num_classes = len(encoders[target].classes_)
-    print("[EMPO3] num_classes:", num_classes)
+    print("[EMPO500] num_classes:", num_classes)
 
     # =========================
     # Dataset
     # =========================
-    class EMPO3Dataset(Dataset):
+    class EMPO500Dataset(Dataset):
         def __init__(self, df, img_dir, split, size=224, is_train=False):
             self.df = df.reset_index(drop=True)
             self.img_dir = os.path.join(img_dir, split)
@@ -1000,7 +1000,7 @@ def run_empo3(empo_cfg):
     BATCH = empo_cfg["batch_size"]
 
     datasets = {
-        sp: EMPO3Dataset(splits[sp], img_root, sp, size=IMG_SIZE, is_train=(sp == "train"))
+        sp: EMPO500Dataset(splits[sp], img_root, sp, size=IMG_SIZE, is_train=(sp == "train"))
         for sp in splits
     }
     loaders = {
@@ -1095,11 +1095,11 @@ def run_empo3(empo_cfg):
         backbone_name=empo_cfg["backbone_name"],
         fusion_type=empo_cfg["fusion_type"]
     ).to(device)
-    print("[EMPO3] Backbone:", empo_cfg["backbone_name"], "| fusion_type:", empo_cfg["fusion_type"])
-    print("[EMPO3] Model params:",
+    print("[EMPO500] Backbone:", empo_cfg["backbone_name"], "| fusion_type:", empo_cfg["fusion_type"])
+    print("[EMPO500] Model params:",
           round(sum(p.numel() for p in model.parameters()) / 1e6, 2), "M")
 
-    # EMA option (EMPO3)
+    # EMA option (EMPO500)
     use_ema = empo_cfg.get("use_ema", False)
     ema_decay = empo_cfg.get("ema_decay", 0.9999)
     ema = ModelEmaV2(model, decay=ema_decay, device=device) if use_ema else None
@@ -1112,7 +1112,7 @@ def run_empo3(empo_cfg):
     fusion_params = [p for n, p in model.named_parameters() if "backbone" not in n]
 
     opt_name_empo = empo_cfg.get("optimizer", "adamw").lower()
-    print(f"[EMPO3] Optimizer = {opt_name_empo}")
+    print(f"[EMPO500] Optimizer = {opt_name_empo}")
 
     if opt_name_empo == "lion":
         opt = Lion([
@@ -1177,7 +1177,7 @@ def run_empo3(empo_cfg):
     # =========================
     # Stage-wise training
     # =========================
-    out_dir = empo_cfg.get("out_dir", os.path.join(base_dir, "checkpoints_empo3"))
+    out_dir = empo_cfg.get("out_dir", os.path.join(base_dir, "checkpoints_empo500"))
     os.makedirs(out_dir, exist_ok=True)
 
     # ckpt = os.path.join("/content", "convnextv2_gatedfusion_best.pt")
@@ -1194,7 +1194,7 @@ def run_empo3(empo_cfg):
     # --- Stage1 ---
     for p in model.backbone.parameters():
         p.requires_grad = False
-    print(f"\n[EMPO3] ===== Stage1: train tab fusion only ({EPOCHS_STAGE1} epochs) =====")
+    print(f"\n[EMPO500] ===== Stage1: train tab fusion only ({EPOCHS_STAGE1} epochs) =====")
     for ep in range(1, EPOCHS_STAGE1 + 1):
         loss = train_one_epoch(model, loaders["train"])
         val_acc, val_f1 = evaluate(model, loaders["val"], use_ema_eval=True)
@@ -1212,14 +1212,14 @@ def run_empo3(empo_cfg):
     if use_stage2:
         if os.path.exists(ckpt_s1):
             model.load_state_dict(torch.load(ckpt_s1, map_location=device))
-            print(f"[EMPO3] Loaded Stage1 best checkpoint from {ckpt_s1} for Stage2 fine-tuning.")
+            print(f"[EMPO500] Loaded Stage1 best checkpoint from {ckpt_s1} for Stage2 fine-tuning.")
         else:
-            print("[EMPO3] Warning: Stage1 checkpoint not found, starting Stage2 from current model.")
+            print("[EMPO500] Warning: Stage1 checkpoint not found, starting Stage2 from current model.")
 
         for p in model.backbone.parameters():
             p.requires_grad = True
 
-        print(f"\n[EMPO3] ===== Stage2: fine-tune full model ({EPOCHS_STAGE2} epochs) =====")
+        print(f"\n[EMPO500] ===== Stage2: fine-tune full model ({EPOCHS_STAGE2} epochs) =====")
         for ep in range(1, EPOCHS_STAGE2 + 1):
             loss = train_one_epoch(model, loaders["train"])
             val_acc, val_f1 = evaluate(model, loaders["val"], use_ema_eval=True)
@@ -1234,7 +1234,7 @@ def run_empo3(empo_cfg):
                 torch.save(model.state_dict(), ckpt_s2)
                 print(f"  [Stage2] Saved best (f1={val_f1:.4f}) -> {ckpt_s2}")
     else:
-        print("[EMPO3] Skipping Stage2 (use_stage2=False).")
+        print("[EMPO500] Skipping Stage2 (use_stage2=False).")
 
     # =========================
     # Test (TTA Option)
@@ -1243,14 +1243,14 @@ def run_empo3(empo_cfg):
     use_tta = empo_cfg["use_tta"]
     n_tta = empo_cfg["tta_n"]
     test_acc, test_f1 = evaluate(model, loaders["test"], tta=use_tta, n_tta=n_tta, use_ema_eval=True)
-    print(f"\n[EMPO3]  Test Accuracy: {test_acc:.4f},  Test Macro-F1: {test_f1:.4f} "
+    print(f"\n[EMPO500]  Test Accuracy: {test_acc:.4f},  Test Macro-F1: {test_f1:.4f} "
           f"(TTA={use_tta}, n_tta={n_tta})")
 
     # =========================
     # Ensemble: FusionModel + MLP (tab-only)
     # =========================
     if empo_cfg.get("use_mlp_ensemble", False):
-        print("\n[EMPO3] === Training tab-only MLP for ensemble ===")
+        print("\n[EMPO500] === Training tab-only MLP for ensemble ===")
 
         @torch.no_grad()
         def predict_proba_fusion(m, loader):
@@ -1316,11 +1316,11 @@ def run_empo3(empo_cfg):
             multi_class="ovr"
         )
 
-        print(f"\n[EMPO3-ENSEMBLE]  Accuracy:        {acc:.4f}")
-        print(f"[EMPO3-ENSEMBLE]  Macro-F1:       {f1m:.4f}")
-        print(f"[EMPO3-ENSEMBLE]  Macro-Precision:{prec_m:.4f}")
-        print(f"[EMPO3-ENSEMBLE]  Macro-Recall:   {rec_m:.4f}")
-        print(f"[EMPO3-ENSEMBLE]  Macro-AUROC:    {auroc:.4f}")
+        print(f"\n[EMPO500-ENSEMBLE]  Accuracy:        {acc:.4f}")
+        print(f"[EMPO500-ENSEMBLE]  Macro-F1:       {f1m:.4f}")
+        print(f"[EMPO500-ENSEMBLE]  Macro-Precision:{prec_m:.4f}")
+        print(f"[EMPO500-ENSEMBLE]  Macro-Recall:   {rec_m:.4f}")
+        print(f"[EMPO500-ENSEMBLE]  Macro-AUROC:    {auroc:.4f}")
 
         print("\n=== Ensemble Classification Report ===")
         print(classification_report(y_true, ensemble_preds))
