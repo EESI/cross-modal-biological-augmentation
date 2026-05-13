@@ -946,7 +946,7 @@ def run_empo500(empo_cfg):
     # raw string version (for MLP) 
     raw_splits = {sp: df.copy() for sp, df in splits.items()}
 
-    features = ['env_biome', 'env_material', 'sample_type', 'scientific_name', 'empo_3']
+    features = ['env_biome', 'env_material', 'sample_type', 'scientific_name', 'empo_500']
     target = 'env_feature'
 
     # -------------------------
