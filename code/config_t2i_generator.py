@@ -45,7 +45,7 @@ T2I_CFG = {
     },
     
     # --- Columns to use for Prompt ---
-    "features": ['env_biome', 'env_material', 'sample_type', 'scientific_name', 'empo_3'],
+    "features": ['env_biome', 'env_material', 'sample_type', 'scientific_name', 'empo_500'],
     
     # --- Debugging / Resume ---
     "limit_per_split": None,   # Set to integer (e.g., 50) for testing, None for full run
@@ -64,7 +64,7 @@ def make_prompt_all_features(row):
         f"the biome '{row['env_biome']}', showing the material '{row['env_material']}' "
         f"and sample type '{row['sample_type']}' in its natural context. "
         f"The setting reflects the scientific sample '{row['scientific_name']}' categorized under "
-        f"EMPO3 '{row['empo_3']}'. "
+        f"EMPO500 '{row['empo_500']}'. "
         f"Focus on environmental textures, terrain, and lighting — "
         f"no human-made objects, no laboratory tools, and no text or labels visible."
     )
