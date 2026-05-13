@@ -4,7 +4,7 @@
 Official supplementary code for:
 "Cross-Modal Generative Augmentation for Multimodal Biological Classification"
 
-This framework supports cross-modal generative augmentation pipeline training for both **EHR (Electronic Health Records) integration tasks** and **EMPO3 environmental classification tasks**.
+This framework supports cross-modal generative augmentation pipeline training for both **EHR (Electronic Health Records) integration tasks** and **EMPO500 environmental classification tasks**.
 
 
 ## Project Structure
