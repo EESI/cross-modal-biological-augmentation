@@ -1,6 +1,6 @@
 # ==================================================
 # Unified script: EHR (HAM10000) + EMPO3 + MLP Ensemble
-#   - CFG["mode"] = "ehr" / "empo3" / "both"
+#   - CFG["mode"] = "ehr" / "empo500" / "both"
 # ==================================================
 
 import os, json, math, re, random
