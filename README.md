@@ -60,7 +60,7 @@ All hyperparameters, file paths, and model settings are defined in `config.py`.
 Before running the code, please ensure the `base_dir` in `config.py` points to the directory containing your dataset.
 
   * **EHR Task:** Configure paths under `CFG["ehr"]`
-  * **EMPO500 Task:** Configure paths under `CFG["empo3"]`
+  * **EMPO500 Task:** Configure paths under `CFG["empo500"]`
 
 ### 2\. Running the Code
 
@@ -80,7 +80,7 @@ To switch between tasks, modify the `mode` variable in `config.py`:
 ```python
 # inside config.py
 CFG = {
-    "mode": "ehr",    # Options: "ehr", "empo3", "both"
+    "mode": "ehr",    # Options: "ehr", "empo500", "both"
     ...
 }
 ```
