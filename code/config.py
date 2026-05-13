@@ -1,5 +1,5 @@
 CFG = {
-    "mode": "ehr",   # "ehr" / "empo3" / "both"
+    "mode": "ehr",   # "ehr" / "empo500" / "both"
 
     "ehr": {
         "base_dir": "/path/to/ehr_dataset/",
@@ -46,7 +46,7 @@ CFG = {
         
     },
 
-    "empo3": {
+    "empo500": {
         "base_dir": "/path/to/empo_dataset/",
         "out_dir": "/content",
         "backbone_name": "convnextv2_base.fcmae_ft_in22k_in1k",
